@@ -71,6 +71,7 @@ svg#g{width:100%;height:440px;display:block;touch-action:none;background:
 .edge.dim{opacity:.13}
 .node circle{stroke:var(--bg);stroke-width:3;transition:opacity .25s,fill .25s}
 .node text{font-weight:700;text-anchor:middle;pointer-events:none;fill:#0f172a;font-size:15px}
+.node text.vid{fill:var(--muted);font-size:11px;font-weight:600}
 .node.dim circle{opacity:.18} .node.dim text{opacity:.3}
 .node.sel circle{stroke:#fff}
 .node.cur circle{stroke:var(--red);stroke-width:4}
@@ -149,7 +150,7 @@ footer{margin-top:56px;padding:26px 0;border-top:1px solid var(--line);color:var
         <div class="legend" id="legend"></div>
       </div>
     </div>
-    <div class="hint" id="hint">Vertex mode: click empty space to add a vertex. Number in each vertex = its coreness.</div>
+    <div class="hint" id="hint">Vertex mode: click empty space to add a vertex. Number inside a vertex = its coreness; small grey number = vertex id.</div>
   </div>
 </section>
 
@@ -293,6 +294,7 @@ function render(){
     const c=peel?(n.id in peel.known?peel.known[n.id]:0):core[n.id];
     el("circle",{r:20,fill:peel&&!(n.id in peel.known)?"#475569":colOf(c)},g);
     el("text",{y:5},g).textContent=shown;
+    el("text",{x:17,y:-15,class:"vid"},g).textContent=n.id;
     g.addEventListener("pointerdown",e=>nodeDown(e,n));
   });
   // sidebar
@@ -327,7 +329,7 @@ svg.addEventListener("pointerdown",e=>{
   else {sel=null;render();}
 });
 
-const hints={add:"Vertex mode: click empty space to add a vertex; drag vertices to move them. Number in each vertex = its coreness.",
+const hints={add:"Vertex mode: click empty space to add a vertex; drag vertices to move them. Number inside a vertex = its coreness; small grey number = vertex id.",
   edge:"Edge mode: click two vertices to add (or remove) the edge between them.",
   del:"Delete mode: click a vertex to remove it with its edges."};
 function setMode(m){mode=m;sel=null;
