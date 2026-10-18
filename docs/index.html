@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KCore – k-core decomposition of undirected graphs</title>
+<meta name="description" content="Header-only C++ class KCore<GraphT> computing the coreness of every vertex in O(|E|) time, built on BitGraph.">
+<link rel="icon" href="logo.svg">
+<style>
+:root{
+  --bg:#0f172a; --panel:#111c33; --panel2:#17233f; --line:#26344f;
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#fbbf24; --blue:#38bdf8; --grey:#94a3b8; --green:#34d399; --red:#f87171;
+  --c0:#94a3b8; --c1:#38bdf8; --c2:#fbbf24; --c3:#fb923c; --c4:#f472b6; --c5:#a78bfa; --c6:#34d399;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 "Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif}
+a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}
+code,pre{font-family:Consolas,"SF Mono",Menlo,monospace}
+code{background:var(--panel2);padding:.1em .4em;border-radius:5px;font-size:.9em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:0;z-index:10;background:rgba(15,23,42,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:22px;align-items:center;height:52px;overflow-x:auto;white-space:nowrap}
+nav b{color:var(--accent);margin-right:auto;letter-spacing:.5px}
+nav a{color:var(--muted);font-size:.92rem} nav a:hover{color:var(--text);text-decoration:none}
+header.hero{padding:56px 0 24px;text-align:center}
+header.hero img{max-width:100%;width:520px;height:auto}
+header.hero p.lead{max-width:720px;margin:22px auto 0;font-size:1.15rem;color:var(--muted)}
+.badges{margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.badge{border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:.82rem;color:var(--muted)}
+.btns{margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:9px 20px;border-radius:9px;background:var(--accent);color:#1e293b;font-weight:600}
+.btn.alt{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn:hover{text-decoration:none;filter:brightness(1.08)}
+section{padding:44px 0 8px}
+h2{font-size:1.65rem;margin:0 0 10px} h2 small{color:var(--muted);font-weight:400;font-size:.55em;margin-left:8px}
+h3{margin:26px 0 6px}
+p{margin:.6em 0}
+.def{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:14px 20px;margin:18px 0}
+.def b{color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+.card h4{margin:0 0 4px;color:var(--accent)} .card p{margin:0;color:var(--muted);font-size:.93rem}
+/* playground */
+.lab{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:18px 0}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.toolbar button,.toolbar select{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:.88rem;cursor:pointer}
+.toolbar button:hover{border-color:var(--muted)}
+.toolbar button.on{border-color:var(--accent);color:var(--accent)}
+.toolbar .sp{flex:1}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 270px}
+@media(max-width:800px){.stage{grid-template-columns:1fr}}
+svg#g{width:100%;height:440px;display:block;touch-action:none;background:
+  radial-gradient(circle at 1px 1px,#1c2a47 1px,transparent 0) 0 0/24px 24px}
+.side{padding:14px 16px;border-left:1px solid var(--line);font-size:.92rem}
+@media(max-width:800px){.side{border-left:0;border-top:1px solid var(--line)}}
+.side h4{margin:0 0 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.side .blk{margin-bottom:16px}
+.slider{display:flex;align-items:center;gap:10px}
+.slider input{flex:1;accent-color:var(--accent)}
+.big{font-size:1.5rem;font-weight:700;color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:26px;padding:0 7px;border-radius:7px;font-size:.8rem;font-weight:600;color:#0f172a}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.hint{padding:8px 14px;border-top:1px solid var(--line);font-size:.83rem;color:var(--muted)}
+.log{font-size:.85rem;color:var(--muted);min-height:3.2em}
+.log b{color:var(--text)}
+/* graph */
+.edge{stroke:#64748b;stroke-width:3;stroke-linecap:round;transition:opacity .25s,stroke .25s}
+.edge.dim{opacity:.13}
+.node circle{stroke:var(--bg);stroke-width:3;transition:opacity .25s,fill .25s}
+.node text{font-weight:700;text-anchor:middle;pointer-events:none;fill:#0f172a;font-size:15px}
+.node.dim circle{opacity:.18} .node.dim text{opacity:.3}
+.node.sel circle{stroke:#fff}
+.node.cur circle{stroke:var(--red);stroke-width:4}
+.node{cursor:grab}
+pre{background:#0b1222;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font-size:.88rem;line-height:1.55}
+pre .c{color:#64748b} pre .k{color:#c084fc} pre .t{color:var(--blue)} pre .n{color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.8px}
+td:first-child{white-space:nowrap}
+ol.steps{padding-left:22px} ol.steps li{margin:6px 0}
+footer{margin-top:56px;padding:26px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem;text-align:center}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <b>KCore</b>
+  <a href="#concept">Concept</a><a href="#playground">Playground</a><a href="#algorithm">Algorithm</a>
+  <a href="#usage">Usage</a><a href="#api">API</a><a href="#build">Build</a>
+  <a href="https://github.com/psanse/KCore">GitHub</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <img src="logo.svg" alt="KCore">
+  <p class="lead">Header-only C++ class <code>KCore&lt;GraphT&gt;</code> that computes the <b>coreness</b> of every vertex of an undirected graph in <b>O(|E|)</b> time, built on the bitset-based <a href="https://github.com/psanse/BitGraph">BitGraph</a> library.</p>
+  <div class="badges"><span class="badge">C++14</span><span class="badge">CMake ≥ 3.14</span><span class="badge">BitGraph v2.0.0</span><span class="badge">header-only</span></div>
+  <div class="btns"><a class="btn" href="#playground">Try it interactively</a><a class="btn alt" href="https://github.com/psanse/KCore">View on GitHub</a></div>
+</div></header>
+
+<main class="wrap">
+
+<section id="concept">
+  <h2>The concept: k-cores</h2>
+  <div class="def">
+    The <b>k-core</b> of a graph is the largest subgraph in which every vertex has degree <b>at least k</b> <i>within that subgraph</i>.
+    The <b>coreness</b> (core number) of a vertex <i>v</i> is the largest <i>k</i> such that <i>v</i> belongs to the k-core.
+    The maximum coreness over all vertices is the <b>degeneracy</b> of the graph.
+  </div>
+  <p>Intuitively, a k-core is what is left after you repeatedly delete every vertex with fewer than <i>k</i> neighbours. Because deleting a vertex lowers the degree of its neighbours, the removal cascades — which is why the core number is more informative than the plain degree: a vertex with many neighbours that are themselves poorly connected still has low coreness.</p>
+  <div class="grid">
+    <div class="card"><h4>Nested</h4><p>The cores form a hierarchy: the (k+1)-core is contained in the k-core. The 0-core is the whole graph.</p></div>
+    <div class="card"><h4>Bounded by degree</h4><p>coreness(v) ≤ deg(v), and a graph with maximum core number <i>k</i> has a clique of size at most <i>k</i>+1.</p></div>
+    <div class="card"><h4>Degeneracy ordering</h4><p>Listing vertices by non-decreasing coreness gives an ordering where each vertex has at most <i>k</i> later neighbours — ideal for clique search and colouring.</p></div>
+  </div>
+</section>
+
+<section id="playground">
+  <h2>Playground <small>build a graph, watch the cores</small></h2>
+  <p>Drag vertices, add your own, and move the slider to see the k-core. Press <b>Peel</b> to watch the algorithm remove minimum-degree vertices one by one.</p>
+  <div class="lab">
+    <div class="toolbar">
+      <button id="bAdd" class="on" title="Click empty space to add a vertex">Vertex</button>
+      <button id="bEdge" title="Click two vertices to toggle the edge between them">Edge</button>
+      <button id="bDel" title="Click a vertex to delete it">Delete</button>
+      <span class="sp"></span>
+      <select id="preset" aria-label="Preset graph">
+        <option value="logo">Preset: logo graph</option>
+        <option value="nested">Preset: nested cores</option>
+        <option value="clique">Preset: clique + tails</option>
+        <option value="random">Preset: random</option>
+        <option value="empty">Preset: empty</option>
+      </select>
+      <button id="bPeel">▶ Peel</button>
+      <button id="bStep">Step</button>
+      <button id="bReset">Reset</button>
+    </div>
+    <div class="stage">
+      <svg id="g" viewBox="0 0 640 440" aria-label="Interactive graph"></svg>
+      <div class="side">
+        <div class="blk"><h4>Show k-core</h4>
+          <div class="slider"><input id="k" type="range" min="0" max="0" value="0"><span class="big" id="kv">0</span></div>
+          <div id="ksz" class="log"></div></div>
+        <div class="blk"><h4>Degeneracy</h4><span class="big" id="deg">0</span></div>
+        <div class="blk"><h4>Degeneracy ordering</h4><div class="chips" id="ord"></div></div>
+        <div class="blk"><h4>Peeling</h4><div class="log" id="log">Press <b>Peel</b> or <b>Step</b>.</div></div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+    <div class="hint" id="hint">Vertex mode: click empty space to add a vertex. Number in each vertex = its coreness.</div>
+  </div>
+</section>
+
+<section id="algorithm">
+  <h2>The algorithm <small>Batagelj &amp; Zaversnik, 2003</small></h2>
+  <p>KCore implements the bin-sort algorithm from <a href="https://arxiv.org/abs/cs/0310049"><i>An O(m) Algorithm for Cores Decomposition of Networks</i></a>:</p>
+  <ol class="steps">
+    <li>Compute the degree of every vertex and bucket-sort vertices by degree.</li>
+    <li>Repeatedly take the vertex <i>v</i> of minimum current degree; its coreness is that degree (never lower than the previous one).</li>
+    <li>Remove <i>v</i>: every not-yet-processed neighbour with a higher degree drops one bucket. Bucket moves are O(1) swaps, so the whole run is O(|E|).</li>
+  </ol>
+  <p>The order in which vertices are removed is the <b>degeneracy ordering</b>, also exposed by the library. The playground above runs exactly this process on your graph.</p>
+</section>
+
+<section id="usage">
+  <h2>Usage</h2>
+  <p>Include <a href="../src/kcore.h"><code>src/kcore.h</code></a>. The class lives in namespace <code>kcore</code> and works on BitGraph graphs (namespace <code>bitgraph</code>).</p>
+<pre><span class="k">#include</span> <span class="n">"kcore.h"</span>
+
+bitgraph::ugraph ug{ <span class="n">4</span> };            <span class="c">// star graph</span>
+ug.add_edge(<span class="n">0</span>, <span class="n">1</span>);
+ug.add_edge(<span class="n">0</span>, <span class="n">2</span>);
+ug.add_edge(<span class="n">0</span>, <span class="n">3</span>);
+
+kcore::KCore&lt;bitgraph::ugraph&gt; kc{ ug };
+kc.find_kcore();                     <span class="c">// O(|E|)</span>
+
+<span class="t">int</span> k = kc.max_core_number();                <span class="c">// 1</span>
+<span class="t">int</span> c = kc.coreness(<span class="n">2</span>);                      <span class="c">// 1</span>
+bitgraph::vertices s = kc.core_set(<span class="n">1</span>);       <span class="c">// vertices in the 1-core</span></pre>
+  <p>To decompose an induced subgraph, pass the vertex set to the constructor and call <code>find_kcore(true)</code>:</p>
+<pre>bitgraph::vertices subgraph = { <span class="n">0</span>, <span class="n">2</span>, <span class="n">3</span> };
+kcore::KCore&lt;bitgraph::ugraph&gt; ksub{ ug, subgraph };
+ksub.find_kcore(<span class="k">true</span>);</pre>
+  <p><code>KCore</code> keeps a reference to the graph, which must outlive it and must not be modified while the object is in use.</p>
+</section>
+
+<section id="api">
+  <h2>API</h2>
+  <table>
+    <tr><th>Member</th><th>Description</th></tr>
+    <tr><td><code>find_kcore(is_subgraph = false)</code></td><td>Computes coreness and the degeneracy ordering, for the whole graph or the induced subgraph.</td></tr>
+    <tr><td><code>find_kcore(g)</code> (static)</td><td>Maximum core number in O(|V|²) via the width of a minimum degenerate ordering. Reference implementation.</td></tr>
+    <tr><td><code>find_kcore_UB(UB)</code></td><td>Degeneracy ordering assuming <code>UB</code> is an upper bound of the core number. Full graph only.</td></tr>
+    <tr><td><code>max_core_number()</code></td><td>Maximum core number, or −1 if there is no decomposition.</td></tr>
+    <tr><td><code>coreness(v)</code> / <code>coreness_numbers()</code></td><td>Core number of a vertex / of all vertices.</td></tr>
+    <tr><td><code>core_size(k)</code> / <code>core_set(k)</code></td><td>Number of vertices with core number <code>k</code> / vertices with core number at least <code>k</code>.</td></tr>
+    <tr><td><code>kcore_ordering()</code></td><td>Vertices in non-decreasing coreness order.</td></tr>
+    <tr><td><code>graph()</code> / <code>subgraph()</code></td><td>The graph being decomposed / the bitset of vertices of the induced subgraph.</td></tr>
+    <tr><td><code>reset_subgraph(bitset)</code></td><td>Sets a new induced subgraph; call <code>find_kcore(true)</code> again afterwards.</td></tr>
+    <tr><td><code>print_kcore(...)</code> / <code>operator&lt;&lt;</code></td><td>Streams the <code>[vertex:coreness]</code> list.</td></tr>
+    <tr><td><code>minimum_width(rev = false)</code></td><td>Width of the graph for the stored ordering (heavy, meant for tests).</td></tr>
+    <tr><td><code>find_heur_clique*()</code></td><td>Greedy clique heuristics over the degeneracy ordering.</td></tr>
+  </table>
+</section>
+
+<section id="build">
+  <h2>Build</h2>
+  <p>BitGraph and GoogleTest are fetched automatically by CMake (<code>FetchContent</code>); you only need a C++14 compiler and CMake 3.14 or later.</p>
+<pre>cmake -S . -B build
+cmake --build build --config Release
+ctest --test-dir build -C Release        <span class="c"># run the unit tests</span>
+
+bin/Release/kcore path/to/graph.clq      <span class="c"># or run without arguments for a demo graph</span></pre>
+</section>
+
+</main>
+
+<footer><div class="wrap">KCore · by <a href="https://github.com/psanse">Pablo San Segundo</a> · built on <a href="https://github.com/psanse/BitGraph">BitGraph</a></div></footer>
+
+<script>
+(function(){
+const NS="http://www.w3.org/2000/svg", W=640, H=440;
+const COL=["--c0","--c1","--c2","--c3","--c4","--c5","--c6"];
+const css=getComputedStyle(document.documentElement);
+const colOf=c=>css.getPropertyValue(COL[Math.min(c,COL.length-1)]).trim();
+const $=id=>document.getElementById(id);
+const svg=$("g");
+
+let nodes=[], edges=[];        // nodes:{id,x,y}, edges:[a,b]
+let mode="add", sel=null, nextId=0;
+let core=[], order=[], maxK=0;  // computed
+let peel=null, timer=null;      // peeling animation state
+
+const adj=()=>{const m=new Map(nodes.map(n=>[n.id,new Set()]));edges.forEach(([a,b])=>{m.get(a).add(b);m.get(b).add(a)});return m};
+
+function decompose(){
+  const A=adj(), deg=new Map([...A].map(([v,s])=>[v,s.size]));
+  const left=new Set(A.keys()); core={}; order=[]; let k=0;
+  while(left.size){
+    let best=null; for(const v of left) if(best===null||deg.get(v)<deg.get(best)) best=v;
+    k=Math.max(k,deg.get(best)); core[best]=k; order.push(best); left.delete(best);
+    for(const u of A.get(best)) if(left.has(u)) deg.set(u,deg.get(u)-1);
+  }
+  maxK=order.length?Math.max(...Object.values(core)):0;
+}
+
+function load(name){
+  stopPeel(); peel=null; $("log").innerHTML="Press <b>Peel</b> or <b>Step</b>."; sel=null; nodes=[]; edges=[]; nextId=0;
+  const add=(x,y)=>nodes.push({id:nextId++,x,y});
+  const E=(...p)=>p.forEach(([a,b])=>edges.push([a,b]));
+  if(name==="logo"){
+    [[200,130],[340,130],[270,250],[110,210],[430,200],[270,350],[500,330]].forEach(p=>add(...p));
+    E([0,1],[0,2],[1,2],[0,3],[1,4],[2,5]);
+  }else if(name==="nested"){
+    const c=[320,220];
+    for(let i=0;i<5;i++){const a=i*2*Math.PI/5-Math.PI/2;add(c[0]+60*Math.cos(a),c[1]+60*Math.sin(a));}
+    for(let i=0;i<5;i++)for(let j=i+1;j<5;j++)E([i,j]);
+    for(let i=0;i<5;i++){const a=i*2*Math.PI/5-Math.PI/2+.3;add(c[0]+135*Math.cos(a),c[1]+135*Math.sin(a));}
+    for(let i=0;i<5;i++)E([5+i,i],[5+i,5+(i+1)%5]);
+    for(let i=0;i<5;i++){const a=i*2*Math.PI/5-Math.PI/2+.3;add(c[0]+195*Math.cos(a),c[1]+175*Math.sin(a));E([10+i,5+i]);}
+  }else if(name==="clique"){
+    for(let i=0;i<4;i++){const a=i*Math.PI/2+Math.PI/4;add(240+70*Math.cos(a),210+70*Math.sin(a));}
+    for(let i=0;i<4;i++)for(let j=i+1;j<4;j++)E([i,j]);
+    add(420,120);add(520,200);add(430,300);add(100,90);add(90,330);
+    E([0,4],[4,5],[5,6],[6,2],[1,7],[3,8],[7,8]);
+  }else if(name==="random"){
+    const n=14;for(let i=0;i<n;i++)add(60+Math.random()*520,40+Math.random()*360);
+    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+      const d=Math.hypot(nodes[i].x-nodes[j].x,nodes[i].y-nodes[j].y);
+      if(Math.random()<Math.max(0,.55-d/330))E([i,j]);}
+  }
+  refresh();
+}
+
+function refresh(){ decompose(); const ks=$("k"); ks.max=maxK; if(+ks.value>maxK) ks.value=maxK; render(); }
+
+const el=(t,a={},p=svg)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
+
+function render(){
+  svg.innerHTML="";
+  const K=+$("k").value, removed=peel?peel.removed:null;
+  const inCore=v=>peel?!removed.has(v):core[v]>=K;
+  const pos=Object.fromEntries(nodes.map(n=>[n.id,n]));
+  edges.forEach(([a,b])=>{
+    el("line",{x1:pos[a].x,y1:pos[a].y,x2:pos[b].x,y2:pos[b].y,class:"edge"+(inCore(a)&&inCore(b)?"":" dim")});
+  });
+  nodes.forEach(n=>{
+    const g=el("g",{class:"node"+(inCore(n.id)?"":" dim")+(sel===n.id?" sel":"")+(peel&&peel.cur===n.id?" cur":""),transform:`translate(${n.x},${n.y})`});
+    const shown=peel&&!(n.id in peel.known)?"":(peel?peel.known[n.id]:core[n.id]);
+    const c=peel?(n.id in peel.known?peel.known[n.id]:0):core[n.id];
+    el("circle",{r:20,fill:peel&&!(n.id in peel.known)?"#475569":colOf(c)},g);
+    el("text",{y:5},g).textContent=shown;
+    g.addEventListener("pointerdown",e=>nodeDown(e,n));
+  });
+  // sidebar
+  $("kv").textContent=K;
+  $("deg").textContent=nodes.length?maxK:"–";
+  const cnt=nodes.filter(n=>core[n.id]>=K).length;
+  $("ksz").innerHTML=peel?"":`<b>${cnt}</b> of ${nodes.length} vertices, <b>${edges.filter(([a,b])=>core[a]>=K&&core[b]>=K).length}</b> edges`;
+  $("ord").innerHTML=order.map(v=>`<span class="chip" style="background:${colOf(core[v])}" title="vertex ${v}, coreness ${core[v]}">${v}</span>`).join("")||"<span class='log'>empty graph</span>";
+  let lg="";for(let i=0;i<=maxK&&i<7;i++)lg+=`<span><i style="background:${colOf(i)}"></i>${i}${i==6&&maxK>6?"+":""}</span>`;
+  $("legend").innerHTML=nodes.length?"coreness: "+lg:"";
+  $("k").disabled=!!peel;
+}
+
+/* interaction */
+function pt(e){const r=svg.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function nodeDown(e,n){
+  e.stopPropagation(); if(peel)return;
+  if(mode==="del"){nodes=nodes.filter(x=>x.id!==n.id);edges=edges.filter(([a,b])=>a!==n.id&&b!==n.id);sel=null;return refresh();}
+  if(mode==="edge"){
+    if(sel===null){sel=n.id;return render();}
+    if(sel!==n.id){const i=edges.findIndex(([a,b])=>(a===sel&&b===n.id)||(a===n.id&&b===sel));
+      if(i>=0)edges.splice(i,1);else edges.push([sel,n.id]);}
+    sel=null;return refresh();
+  }
+  const move=ev=>{const p=pt(ev);n.x=Math.max(20,Math.min(W-20,p.x));n.y=Math.max(20,Math.min(H-20,p.y));render();};
+  const up=()=>{removeEventListener("pointermove",move);removeEventListener("pointerup",up);};
+  addEventListener("pointermove",move);addEventListener("pointerup",up);
+}
+svg.addEventListener("pointerdown",e=>{
+  if(peel)return;
+  if(mode==="add"){const p=pt(e);nodes.push({id:nextId++,x:p.x,y:p.y});refresh();}
+  else {sel=null;render();}
+});
+
+const hints={add:"Vertex mode: click empty space to add a vertex; drag vertices to move them. Number in each vertex = its coreness.",
+  edge:"Edge mode: click two vertices to add (or remove) the edge between them.",
+  del:"Delete mode: click a vertex to remove it with its edges."};
+function setMode(m){mode=m;sel=null;
+  ["Add","Edge","Del"].forEach(x=>$("b"+x).classList.toggle("on",x.toLowerCase()===m));
+  $("hint").textContent=hints[m];render();}
+$("bAdd").onclick=()=>setMode("add");$("bEdge").onclick=()=>setMode("edge");$("bDel").onclick=()=>setMode("del");
+$("k").oninput=render;
+$("preset").onchange=e=>load(e.target.value);
+
+/* peeling animation: remove a min-degree vertex per step */
+function startPeel(){
+  const A=adj(); peel={A,deg:new Map([...A].map(([v,s])=>[v,s.size])),removed:new Set(),known:{},cur:null,k:0};
+}
+function step(){
+  if(!nodes.length)return false;
+  if(!peel)startPeel();
+  const p=peel; const left=nodes.filter(n=>!p.removed.has(n.id)).map(n=>n.id);
+  if(!left.length){return false;}
+  let b=left[0];for(const v of left)if(p.deg.get(v)<p.deg.get(b))b=v;
+  const d=p.deg.get(b), raised=d>p.k; p.k=Math.max(p.k,d);
+  p.known[b]=p.k;p.cur=b;p.removed.add(b);
+  for(const u of p.A.get(b))if(!p.removed.has(u))p.deg.set(u,p.deg.get(u)-1);
+  $("log").innerHTML=`Remove vertex <b>${b}</b> (current degree ${d}${raised?`, k rises to <b>${p.k}</b>`:""}). Coreness = <b>${p.k}</b>.`+(left.length===1?"<br>Done.":"");
+  render(); return left.length>1;
+}
+function stopPeel(){clearInterval(timer);timer=null;$("bPeel").textContent="▶ Peel";}
+$("bPeel").onclick=()=>{
+  if(timer){stopPeel();return;}
+  if(peel&&peel.removed.size===nodes.length)resetPeel();
+  $("bPeel").textContent="⏸ Pause";
+  const tick=()=>{if(!step())stopPeel();};
+  tick();timer=setInterval(tick,900);
+};
+$("bStep").onclick=()=>{stopPeel();if(peel&&peel.removed.size===nodes.length)return;step();};
+function resetPeel(){stopPeel();peel=null;$("log").innerHTML="Press <b>Peel</b> or <b>Step</b>.";render();}
+$("bReset").onclick=resetPeel;
+
+load("logo");
+})();
+</script>
+</body>
+</html>
