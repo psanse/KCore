@@ -24,7 +24,7 @@ From the decomposition it also provides:
 
 ## Usage
 
-Include [`src/kcore.h`](src/kcore.h) and decompose a graph:
+Include [`src/kcore.h`](src/kcore.h). The class lives in the `kcore` namespace and works on BitGraph graphs (namespace `bitgraph`):
 
 ```cpp
 #include "kcore.h"
@@ -34,21 +34,23 @@ ug.add_edge(0, 1);
 ug.add_edge(0, 2);
 ug.add_edge(0, 3);
 
-bitgraph::KCore<bitgraph::ugraph> kc{ ug };
+kcore::KCore<bitgraph::ugraph> kc{ ug };
 kc.find_kcore();                     // O(|E|)
 
-int k  = kc.max_core_number();       // 1
-int c  = kc.coreness(2);             // 1
-auto s = kc.core_set(1);             // vertices in the 1-core
+int k = kc.max_core_number();                // 1
+int c = kc.coreness(2);                      // 1
+bitgraph::vertices s = kc.core_set(1);       // vertices in the 1-core
 ```
 
 To decompose an induced subgraph, pass the vertex set to the constructor and call `find_kcore(true)`:
 
 ```cpp
 bitgraph::vertices subgraph = { 0, 2, 3 };
-bitgraph::KCore<bitgraph::ugraph> kc{ ug, subgraph };
-kc.find_kcore(true);
+kcore::KCore<bitgraph::ugraph> ksub{ ug, subgraph };
+ksub.find_kcore(true);
 ```
+
+`KCore` keeps a reference to the graph, which must outlive it and must not be modified while the object is in use.
 
 See [`src/main_kcore.cpp`](src/main_kcore.cpp) and [`src/tests/test_kcore.cpp`](src/tests/test_kcore.cpp) for complete examples.
 

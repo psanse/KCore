@@ -24,6 +24,7 @@
 #include "utils/logger.h"
 
 using namespace bitgraph;
+using namespace kcore;
 
 namespace {
 	

@@ -441,7 +441,7 @@ namespace kcore {
 		vertices pos_;				///< position of each vertex in @c ver_ (old-to-new format)
 	};
 
-}
+} // end namespace kcore
 
 
 //////////////////////////////////////////////////////

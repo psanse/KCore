@@ -17,7 +17,7 @@
  */
 static void print_decomposition(bitgraph::ugraph& ug) {
 
-	KCore<bitgraph::ugraph> kc{ ug };
+	kcore::KCore<bitgraph::ugraph> kc{ ug };
 	kc.find_kcore();
 
 	std::cout << "|V|=" << ug.num_vertices() << " max core number: " << kc.max_core_number() << std::endl;
