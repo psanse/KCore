@@ -10,7 +10,7 @@
 
 # k-core decomposition of undirected graphs
 
-Header-only C++ class `KCore<GraphT>` that computes the **coreness** of every vertex of an undirected graph (or of the subgraph induced by a set of vertices) in O(|E|) time, using the bin-sort algorithm of Batagelj and Zaversnik. It is built on the bitset-based [BitGraph](https://github.com/psanse/BitGraph) library.
+Header-only C++ class `KCore<GraphT>` that computes the **coreness** of every vertex of an undirected graph (or of the subgraph induced by a set of vertices) in O(|E|) time, using the bin-sort algorithm of Batagelj and Zaversnik ([*An O(m) Algorithm for Cores Decomposition of Networks*, 2003](https://arxiv.org/abs/cs/0310049)). It is built on the bitset-based [BitGraph](https://github.com/psanse/BitGraph) library.
 
 From the decomposition it also provides:
 
@@ -50,7 +50,7 @@ bitgraph::KCore<bitgraph::ugraph> kc{ ug, subgraph };
 kc.find_kcore(true);
 ```
 
-See [`src/tests/test_kcore.cpp`](src/tests/test_kcore.cpp) for more examples.
+See [`src/main_kcore.cpp`](src/main_kcore.cpp) and [`src/tests/test_kcore.cpp`](src/tests/test_kcore.cpp) for complete examples.
 
 ## API
 
@@ -76,6 +76,12 @@ cmake --build build --config Release
 ctest --test-dir build -C Release        # run the unit tests
 ```
 
+The executable `kcore` is written to `bin/`. Run it without arguments for a demo graph, or pass a DIMACS graph file:
+
+```bash
+bin/Release/kcore path/to/graph.clq
+```
+
 ## Known issues
 
 - Some tests are disabled (`DISABLED_kcore_decomp_subgraph`, `DISABLED_kcore_example_I`, `DISABLED_random`).
@@ -84,6 +90,7 @@ ctest --test-dir build -C Release        # run the unit tests
 
 ```
 src/kcore.h            KCore class (header-only)
+src/main_kcore.cpp     demo executable
 src/tests/             GoogleTest unit tests
 docs/logo.svg          project logo
 CMakeLists.txt         fetches BitGraph and GoogleTest

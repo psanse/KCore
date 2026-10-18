@@ -6,10 +6,9 @@
  * @last_update 27/01/25
  * @author pss
  *
- * @TODO - mention reference paper to determine KCore
+ * @reference V. Batagelj, M. Zaversnik, "An O(m) Algorithm for Cores Decomposition of Networks", 2003. https://arxiv.org/abs/cs/0310049
  * @TODO - using pointer to external bitset as set of vertices of the induced subgraph. Change to an owned bitset or vector of vertices (13/01/25)
  *		  Add different types to define the set of vertices that induces the subgraph (13/01/25)
- * @todo - tests not passing, check (02/02/2026)
  **/
 
 #ifndef __KCORE_H__
