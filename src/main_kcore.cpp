@@ -17,7 +17,7 @@
  */
 static void print_decomposition(bitgraph::ugraph& ug) {
 
-	bitgraph::KCore<bitgraph::ugraph> kc{ ug };
+	KCore<bitgraph::ugraph> kc{ ug };
 	kc.find_kcore();
 
 	std::cout << "|V|=" << ug.num_vertices() << " max core number: " << kc.max_core_number() << std::endl;
@@ -26,6 +26,8 @@ static void print_decomposition(bitgraph::ugraph& ug) {
 
 /**
  * @brief Demo: k-core decomposition of a graph read from a file, or of a small demo graph
+ * @param argc number of command line arguments
+ * @param argv command line arguments; optional first argument: path to a DIMACS graph file
  * @returns 0 on success
  */
 int main(int argc, char** argv) {
