@@ -45,7 +45,7 @@ auto s = kc.core_set(1);             // vertices in the 1-core
 To decompose an induced subgraph, pass the vertex set to the constructor and call `find_kcore(true)`:
 
 ```cpp
-std::vector<int> subgraph = { 0, 2, 3 };
+bitgraph::vertices subgraph = { 0, 2, 3 };
 bitgraph::KCore<bitgraph::ugraph> kc{ ug, subgraph };
 kc.find_kcore(true);
 ```
@@ -56,13 +56,16 @@ See [`src/main_kcore.cpp`](src/main_kcore.cpp) and [`src/tests/test_kcore.cpp`](
 
 | Member | Description |
 |---|---|
-| `find_kcore(is_subg = false)` | Computes coreness and the degeneracy ordering, for the whole graph or the induced subgraph. |
+| `find_kcore(is_subgraph = false)` | Computes coreness and the degeneracy ordering, for the whole graph or the induced subgraph. |
 | `find_kcore(g)` (static) | Maximum core number in O(\|V\|²), via the width of a minimum degenerate ordering. Reference implementation. |
 | `find_kcore_UB(UB)` | Degeneracy ordering assuming `UB` is an upper bound of the core number. Only for the full graph. |
 | `max_core_number()` | Maximum core number, or -1 if there is no decomposition. |
 | `coreness(v)` / `coreness_numbers()` | Core number of a vertex / of all vertices. |
 | `core_size(k)` / `core_set(k)` | Number of vertices with core number `k` / vertices with core number at least `k`. |
 | `kcore_ordering()` | Vertices in non-decreasing coreness order. |
+| `graph()` / `subgraph()` | The graph being decomposed / the bitset of vertices of the induced subgraph (empty for the whole graph). |
+| `reset_subgraph(bitset)` | Sets a new induced subgraph; call `find_kcore(true)` again afterwards. |
+| `print_kcore(include_degree, is_subgraph, os)` / `operator<<` | Streams the `[vertex:coreness]` list. |
 | `minimum_width(rev = false)` | Width of the graph for the stored ordering (heavy, meant for tests). |
 | `find_heur_clique*()` | Greedy clique heuristics over the degeneracy ordering. |
 
@@ -89,7 +92,8 @@ bin/Release/kcore path/to/graph.clq
 ## Project layout
 
 ```
-src/kcore.h            KCore class (header-only)
+src/kcore.h            KCore class declaration (header-only library)
+src/kcore_imp.h        KCore implementation, included by kcore.h
 src/main_kcore.cpp     demo executable
 src/tests/             GoogleTest unit tests
 docs/logo.svg          project logo
