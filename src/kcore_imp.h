@@ -1,36 +1,27 @@
 /**
  * @file kcore_imp.h
-
+ * @brief Template implementations of the KCore class.
+ *
+ * @details Implements algorithms for computing k-core decompositions,
+ *          core numbers, and degeneracy orderings of undirected graphs.
+ *
+ *          Uses graph data structures and utilities provided by BITGRAPH.
+ *
+ * @author pss
  */
 
-//
-//#include "utils/logger.h"
-//#include "graph/graph_unweighted.h"
-//#include "graph_fast_sort.h"
-//#include <vector>
-//#include <iostream>
-//#include <algorithm>
-//#include <map>
-//
-//#include <cassert>		 //undef NDEBUG to avoid assertions
-
-
-//useful aliases
-
-using vint = std::vector<int>;
-using vint_it = std::vector<int>::iterator;
-using vint_cit = std::vector<int>::const_iterator;
-
-using map_t = std::map<int, int>;
-using map_it = std::map<int, int>::iterator;
-
+using namespace kcore;
 
 template<class GraphT>
 inline int KCore<GraphT>::find_kcore(graph_type& g)
 {
 	//degenerate minimum degree ordering
 	GraphFastRootSort<GraphT> gfs(g);
-	vint degen_order = gfs.new_order(GraphFastRootSort<GraphT>::strategy_t::min_degeneracy, GraphFastRootSort<GraphT>::placement_t::last_to_first, GraphFastRootSort<GraphT>::sort_order_t::new_to_old);		//MUST BE LAST-TO-FIRST!
+	bitgraph::vertex_ordering_t degen_order =
+		gfs.new_order(
+			GraphFastRootSort<GraphT>::strategy_t::min_degeneracy,
+			GraphFastRootSort<GraphT>::placement_t::last_to_first,
+			GraphFastRootSort<GraphT>::sort_order_t::new_to_old);		//MUST BE LAST-TO-FIRST!
 
 	//I. count maximum of the neighbors of each vertex v that precedes v in the ordering
 	//II.find the maximum count
@@ -439,8 +430,9 @@ inline void KCore<GraphT>::bin_sort(
 	bitgraph::vertex_ordering_t& ordering,
 	bool reverse)
 {
-	
-		//init bin_ to point at the correct position in vertex array according to size
+	using vord_t = bitgraph::vertex_ordering_t;
+
+	//init bin_ to point at the correct position in vertex array according to size
 	int start = 0;
 	int num = 0;
 	for (auto d = 0; d < bin_.size(); ++d) {
@@ -450,7 +442,7 @@ inline void KCore<GraphT>::bin_sort(
 	}
 
 	if (reverse) {
-		for (vint::reverse_iterator it = ordering.rbegin(); it != ordering.rend(); ++it) {
+		for (vord_t::reverse_iterator it = ordering.rbegin(); it != ordering.rend(); ++it) {
 			int v = *it;
 			pos_[v] = bin_[deg_[v]];
 			ver_[pos_[v]] = v;
@@ -458,7 +450,7 @@ inline void KCore<GraphT>::bin_sort(
 		}
 	}
 	else {
-		for (vint::iterator it = ordering.begin(); it != ordering.end(); ++it) {
+		for (vord_t::iterator it = ordering.begin(); it != ordering.end(); ++it) {
 			int v = *it;
 			pos_[v] = bin_[deg_[v]];
 			ver_[pos_[v]] = v;
@@ -538,7 +530,7 @@ template<class GraphT>
 inline auto KCore<GraphT>::core_set(std::size_t k) const -> vertices
 {
 
-	vint res;
+	vertices res;
 
 	for (auto v = 0; v < deg_.size(); ++v) {
 		if (deg_[v] >= k) {
@@ -565,20 +557,7 @@ inline std::size_t KCore<GraphT>::core_size(std::size_t k) const noexcept {
 
 template<class GraphT>
 inline int KCore<GraphT>::make_kcore_filter(map_t& filter, bool reverse) {
-	///////////////////////////////
-	// maps kcore number to the starting vertex of the next kcore partition (filter[kc(v)]->first vertex w,  kc(w)=kc(v)+1)
-	// Example [v,kc(v)], reverse=TRUE, kcore dec:[1,1][2,1][3,2][4,1] then filter[2]=1 the single element in filter
-	// Example [v,kc(v)], reverse=FALSE, kcore dec:[1,1][2,1][3,2][4,1] then filter[1]=4 the single element in filter
-	//
-	// PARAMS:
-	// 1-filter: the mapping
-	// 2-reverse: if TRUE assumes kcore partitions are in increasing order from first to last
-	//            if FALSE assumes kcore partitions are in decreasing order from first to last
-	//
-	// RETURNS: size of filter
-	// REMARKS: kcore-decomposition must exist (prior call to k-core())
-
-		//***assert existence of kcore decomposition
+	
 
 	filter.clear();
 	int next_kcore_pos = 0;

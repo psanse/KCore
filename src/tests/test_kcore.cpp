@@ -205,7 +205,7 @@ TEST(KCore, find_heur_clique_brock) {
 	kc.find_kcore();
 
 	//must terminate and return a valid clique
-	vint clique = kc.find_heur_clique();
+	vertices clique = kc.find_heur_clique();
 
 	ASSERT_GE(clique.size(), 2u);
 	for (std::size_t i = 0; i < clique.size() - 1; ++i) {
@@ -218,6 +218,8 @@ TEST(KCore, find_heur_clique_brock) {
 TEST_F(KcoreWTest, make_kcore_filter) {
 
 	KCore<ugraph> kc(ug);
+	using map_t = KCore<ugraph>::map_t;
+
 	kc.find_kcore();
 
 	//all vertices have core number 1: no partition boundaries
