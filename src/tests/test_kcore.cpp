@@ -94,6 +94,7 @@ TEST_F(KcoreWTest, set_subgraph_from_vector) {
 TEST_F(KcoreWTest, kcore_decomp_full_graph) {
 
 	KCore<ugraph> kc(ug);
+	using core_numbers_t = KCore<ugraph>::core_numbers_t;
 
 	/////////////////
 	kc.find_kcore();
@@ -106,7 +107,7 @@ TEST_F(KcoreWTest, kcore_decomp_full_graph) {
 	EXPECT_EQ(1, kc.coreness(2));
 	EXPECT_EQ(1, kc.coreness(3));
 
-	vint kcore_num = kc.coreness_numbers();					//coreness of all vertices
+	core_numbers_t kcore_num = kc.coreness_numbers();					//coreness of all vertices
 	EXPECT_EQ(1, kcore_num[0]);
 	EXPECT_EQ(1, kcore_num[1]);
 	EXPECT_EQ(1, kcore_num[2]);
@@ -188,7 +189,7 @@ TEST_F(KcoreWTest, find_heur_clique) {
 	kc.find_kcore();
 
 	///////////////////////////////
-	vint clique = kc.find_heur_clique();
+	vertices clique = kc.find_heur_clique();
 	///////////////////////////////
 
 	//the largest clique in a star graph is an edge
@@ -253,7 +254,7 @@ TEST(KCoreSparse, kcore_decomp_full_graph){
 	EXPECT_EQ(8, kc.core_size(1));
 
 	//2-core = {0, 1, 6}
-	vint core2	= kc.core_set(2);
+	vertices core2	= kc.core_set(2);
 	EXPECT_EQ(1, count(core2.begin(), core2.end(), 0));
 	EXPECT_EQ(1, count(core2.begin(), core2.end(), 1));
 	EXPECT_EQ(1, count(core2.begin(), core2.end(), 6));
@@ -289,7 +290,7 @@ TEST(KCoreSparse, DISABLED_kcore_decomp_subgraph) {
 
 
 	//2-core = {0, 1, 6}
-	vint core2 = kc.core_set(2);
+	vertices core2 = kc.core_set(2);
 	EXPECT_EQ(3, kc.core_size(2));
 	EXPECT_EQ(1, count(core2.begin(), core2.end(), 0));
 	EXPECT_EQ(1, count(core2.begin(), core2.end(), 1));
@@ -373,7 +374,7 @@ TEST(KCoreUB, DISABLED_kcore_example_I) {
 	kc.find_kcore();
 	int kcn = kc.max_core_number();
 	int UB_corr = kc.find_kcore_UB(kcn);
-	int kcUBn = kc.max_core_number();
+	KCore<ugraph>::core_t kcUBn = kc.max_core_number();
 
 	EXPECT_EQ(UB_corr, kcUBn);
 	EXPECT_EQ(kcUBn, kc.minimum_width(true)); //checks width (real degrees)
