@@ -20,6 +20,8 @@ From the decomposition it also provides:
 - a variant of the decomposition for a known upper bound on the core number (`find_kcore_UB`);
 - greedy clique heuristics based on the degeneracy ordering.
 
+**[Project webpage with an interactive k-core demo](https://psanse.github.io/KCore/)** ([source](docs/index.html))
+
 > **Status:** work in progress. The enabled unit tests pass with BitGraph v2.0.0; see [Known issues](#known-issues).
 
 ## Usage
