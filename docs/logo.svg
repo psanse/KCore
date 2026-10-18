@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="220" viewBox="0 0 720 220" role="img" aria-labelledby="t d">
+  <title id="t">KCore</title>
+  <desc id="d">A small graph whose vertices are labeled with their core number: a triangle in the 2-core, pendant vertices in the 1-core and an isolated vertex in the 0-core, next to the project name.</desc>
+  <rect width="720" height="220" rx="22" fill="#0f172a"/>
+
+  <!-- edges -->
+  <g stroke="#64748b" stroke-width="5" stroke-linecap="round">
+    <line x1="112" y1="66"  x2="212" y2="66"/>
+    <line x1="112" y1="66"  x2="162" y2="156"/>
+    <line x1="212" y1="66"  x2="162" y2="156"/>
+    <line x1="112" y1="66"  x2="48"  y2="122"/>
+    <line x1="212" y1="66"  x2="262" y2="112"/>
+    <line x1="162" y1="156" x2="162" y2="196"/>
+  </g>
+
+  <!-- vertices labeled with core number: triangle -> 2, pendants -> 1, isolated -> 0 -->
+  <g stroke="#0f172a" stroke-width="4">
+    <circle cx="112" cy="66"  r="24" fill="#fbbf24"/>
+    <circle cx="212" cy="66"  r="24" fill="#fbbf24"/>
+    <circle cx="162" cy="156" r="24" fill="#fbbf24"/>
+    <circle cx="48"  cy="122" r="20" fill="#38bdf8"/>
+    <circle cx="262" cy="112" r="20" fill="#38bdf8"/>
+    <circle cx="162" cy="196" r="14" fill="#38bdf8"/>
+    <circle cx="256" cy="176" r="20" fill="#94a3b8"/>
+  </g>
+  <g fill="#0f172a" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle">
+    <text x="112" y="73">2</text>
+    <text x="212" y="73">2</text>
+    <text x="162" y="163">2</text>
+    <text x="48"  y="129">1</text>
+    <text x="262" y="119">1</text>
+    <text x="256" y="183">0</text>
+  </g>
+
+  <!-- title -->
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <text x="312" y="104" font-size="52" font-weight="700" fill="#f8fafc">KCore</text>
+    <text x="314" y="140" font-size="19" fill="#94a3b8">k-core decomposition of undirected graphs</text>
+    <text x="314" y="170" font-size="15" fill="#64748b" letter-spacing="1.5">CORENESS  ·  DEGENERACY  ·  C++14  ·  BitGraph</text>
+  </g>
+</svg>

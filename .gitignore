@@ -1,0 +1,23 @@
+# Build output
+/build/
+/bin/
+/out/
+/install/
+
+# CMake
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Compiled objects and binaries
+*.obj
+*.o
+*.exe
+*.pdb
+*.ilk
