@@ -18,7 +18,7 @@ FetchContent_Declare(
   bitgraph
   GIT_REPOSITORY https://github.com/psanse/BitGraph
   #GIT_TAG v2.0.0 				# latest release
-  GIT_TAG MASTER 				
+  GIT_TAG master 				
 )
 FetchContent_MakeAvailable(bitgraph)
 
