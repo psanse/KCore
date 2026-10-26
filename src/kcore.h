@@ -51,30 +51,28 @@
 #define SWAP_BIN(u)	{ int du = deg_[(u)]; int pu = pos_[(u)]; int pw = bin_[du]; int w = ver_[pw];		\
 						if( (u) != w) { pos_[(u)] = pw; pos_[w] = pu; ver_[pu] = w; ver_[pw] = (u);}	\
 						bin_[du]++;																			}
-
-/**
- * @class KCore
- * @brief Computes and stores the coreness of the vertices of an undirected graph.
- *
- * @details The k-core of a graph is its maximal subgraph in which every vertex has
- *          degree at least k. The coreness (core number) of a vertex is the largest k
- *          such that the vertex belongs to the k-core. The maximum core number of
- *          a graph is its degeneracy.
- *
- *          Typical use: construct the object, call find_kcore(), and then query the
- *          results with the getters. The getters are only meaningful after a
- *          decomposition has been computed.
- *
- * @tparam GraphT undirected graph type (for example bitgraph::ugraph or bitgraph::sparse_ugraph)
- *
- * @note The graph is stored by reference and must outlive the KCore object.
- *       It must not be modified while the object is in use.
- *
- * @todo Verify that the graph has not been changed (08/09/2025).
- */
-
 namespace kcore {
 
+	/**
+	 * @class KCore
+	 * @brief Computes and stores the coreness of the vertices of an undirected graph.
+	 *
+	 * @details The k-core of a graph is its maximal subgraph in which every vertex has
+	 *          degree at least k. The coreness (core number) of a vertex is the largest k
+	 *          such that the vertex belongs to the k-core. The maximum core number of
+	 *          a graph is its degeneracy.
+	 *
+	 *          Typical use: construct the object, call find_kcore(), and then query the
+	 *          results with the getters. The getters are only meaningful after a
+	 *          decomposition has been computed.
+	 *
+	 * @tparam GraphT undirected graph type (for example bitgraph::ugraph or bitgraph::sparse_ugraph)
+	 *
+	 * @note The graph is stored by reference and must outlive the KCore object.
+	 *       It must not be modified while the object is in use.
+	 *
+	 * @todo Verify that the graph has not been changed (08/09/2025).
+	 */
 	template<class GraphT>
 	class KCore {
 	public:
