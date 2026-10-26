@@ -925,3 +925,6 @@ namespace kcore {
 } // end of namespace kcore
 
 
+// all maro uses are in this fil - keeps the macro local to this file and
+// avoids conflicts with other files that may include this header
+#undef SWAP_BIN 
